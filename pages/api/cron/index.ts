@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { cron } from "@/lib/cron";
+import { redditCron } from "@/lib/redditCron";
 import { verifySignature } from "@upstash/qstash/nextjs";
 import { log } from "@/lib/slack";
 import { isDuplicateCron } from "@/lib/upstash";
@@ -10,8 +10,8 @@ async function handler(_req: NextApiRequest, res: NextApiResponse) {
     return res.status(500).json({ message: "Duplicate cron job" });
   }
   try {
-    const response = await cron();
-    console.log("Cron job successful! Response:", response);
+    const response = await redditCron();
+    console.log("Reddit job successful! Response:", response);
     res.status(200).json(response);
   } catch (err) {
     console.log("Cron job error:", err);

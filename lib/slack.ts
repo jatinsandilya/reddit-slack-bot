@@ -10,7 +10,8 @@ import {
   trackUnfurls,
   getTeamConfigAndStats,
 } from "./upstash";
-import { getPost, getParent } from "@/lib/hn";
+import { getParent } from "@/lib/hn";
+import { getPost } from "@/lib/reddit";
 
 export function verifyRequest(req: NextApiRequest) {
   /* Verify that requests are genuinely coming from Slack and not a forgery */
@@ -112,14 +113,12 @@ export async function handleUnfurl(req: NextApiRequest, res: NextApiResponse) {
   }
 
   const [post, accessToken, keywords] = await Promise.all([
-    getPost(parseInt(id)), // get post data from hacker news API
+    getPost(id), // get post data from hacker news API
     getAccessToken(team_id), // get access token from upstash
     getKeywords(team_id), // get keywords from upstash
   ]);
 
   const { processedPost, mentionedTerms } = regexOperations(post, keywords); // get post data with keywords highlighted
-
-  const originalPost = post.parent ? await getParent(post) : null; // if post is a comment, get title of original post
 
   const response = await fetch("https://slack.com/api/chat.unfurl", {
     // unfurl the hacker news post using the Slack API
@@ -134,13 +133,9 @@ export async function handleUnfurl(req: NextApiRequest, res: NextApiResponse) {
       unfurls: {
         [url]: {
           mrkdwn_in: ["author_name", "text", "footer"],
-          fallback: `https://news.ycombinator.com/item?id=${post.id}`,
-          author_name: `New <https://news.ycombinator.com/item?id=${post.id}|${post.type}> from <https://news.ycombinator.com/user?id=${post.by}|${post.by}>`,
-          author_icon: `https://ui-avatars.com/api/?name=${post.by}&background=random`,
-          ...(post.title && {
-            title: post.title,
-            title_link: `https://news.ycombinator.com/item?id=${post.id}`,
-          }),
+          fallback: post.url,
+          author_name: `New <${post.url}|post> from <https://www.reddit.com/user/${post.author_name}|${post.author_name}>`,
+          author_icon: post.author_icon,
           text: processedPost,
           ...(mentionedTerms.size > 0 && {
             fields: [
@@ -151,17 +146,8 @@ export async function handleUnfurl(req: NextApiRequest, res: NextApiResponse) {
               },
             ],
           }),
-          footer: `<https://news.ycombinator.com/item?id=${
-            originalPost ? originalPost.id : post.id
-          }|${
-            originalPost?.title // if original post exists, add a footer with the link to it
-              ? `on: ${truncateString(originalPost.title, 40)}` // truncate the title to max 40 chars
-              : "Hacker News"
-          }> | <!date^${
-            post.time
-          }^{date_short_pretty} at {time}^${`https://news.ycombinator.com/item?id=${post.id}`}|Just Now>`,
           footer_icon:
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Y_Combinator_logo.svg/1024px-Y_Combinator_logo.svg.png",
+            "https://upload.wikimedia.org/wikipedia/en/5/58/Reddit_logo_new.svg",
         },
       },
     }),

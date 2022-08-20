@@ -8,6 +8,7 @@ export function combineText(post: any) {
   /* combine text from post's title, text, and url */
   let text = "";
   if (!post) return text;
+  // console.log("POST", post);
   if (post.url) {
     text += `${post.url}\n`;
   }
@@ -16,6 +17,9 @@ export function combineText(post: any) {
   }
   if (post.text) {
     text += `${post.text}\n`;
+  }
+  if (post.comments) {
+    text += `${post.comments}\n`;
   }
   return text;
 }

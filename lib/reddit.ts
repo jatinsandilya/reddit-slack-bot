@@ -21,29 +21,47 @@ export async function getLatestPosts() {
   const subReddit: string = "Zapier"; // TODO: Update with something else. Make it dynamic
   return await client.getNew(subReddit, { limit: 10 });
 }
+
+function getSubComments(comment: Snoowrap.Comment, allComments: any) {
+  allComments.push(comment.body);
+  let replies: any = [];
+  if (!comment.replies) {
+    replies = [];
+  } else {
+    replies = comment.replies;
+  }
+  replies.forEach((reply: Snoowrap.Comment) =>
+    getSubComments(reply, allComments)
+  );
+}
 //@ts-ignore
 export async function getPost(id: string) {
   /* get post data using its id from hacker news */
-  const run = () => {
+  const run = async () => {
     console.log("fetching post", id);
     //@ts-ignore
     return client
       .getSubmission(id)
-      .fetch()
-      .then((submission) => {
+      .fetch() //@ts-ignore
+      .then(async (submission) => {
         if (submission === null) {
           throw new Error("Submission not found!");
         }
-        const commentBodies = submission.comments.map(
-          (c: { body: any }) => c.body
-        );
+        const comments = await submission.comments.fetchAll();
+
+        const commentList: any = [];
+        comments.forEach((c) => {
+          getSubComments(c, commentList);
+        });
         let submissionWithComments = { ...submission, comments: [""] };
-        submissionWithComments.comments = commentBodies;
+        submissionWithComments.comments = commentList.reduce(
+          (a: any, b: any) => a + b
+        );
         return submissionWithComments;
       });
   };
   try {
-    return run();
+    return await run();
   } catch (e) {
     console.log("error", e);
     return null;

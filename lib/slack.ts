@@ -121,6 +121,7 @@ export async function handleUnfurl(req: NextApiRequest, res: NextApiResponse) {
   const { processedPost, mentionedTerms } = regexOperations(post, keywords); // get post data with keywords highlighted
 
   if (post) {
+    console.log("HERE", processedPost);
     const response = await fetch("https://slack.com/api/chat.unfurl", {
       // unfurl the hacker news post using the Slack API
       method: "POST",

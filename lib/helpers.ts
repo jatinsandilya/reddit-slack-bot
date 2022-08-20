@@ -8,7 +8,7 @@ export function combineText(post: any) {
   /* combine text from post's title, text, and url */
   let text = "";
   if (!post) return text;
-  // console.log("POST", post);
+
   if (post.url) {
     text += `${post.url}\n`;
   }
@@ -49,7 +49,7 @@ export function postScanner(teamsAndKeywords: TeamAndKeywords) {
   const scanner = new RegExp(`(${boundaries.join(")|(")})`, "gi"); // create a regex that matches all keywords
 
   return (post: any): Set<string> => {
-    const text = combineText(post); // combine text from post's title, text, and url
+    const text = combineText(post); // combine text from post's title, text, comments and url
     const teamsInterestedInThisPost = new Set() as Set<string>; // set of team IDs that are interested in this post
 
     text.replace(scanner, (_, ...terms) => {
@@ -96,8 +96,8 @@ export function regexOperations(post: any, keywords: string[]) {
   //   const termsRegex = /(\bVercel\b)|(\bNextJS\b))\b/gi
   const termsRegex = new RegExp(`(${keywordWordBoundary.join(")|(")})`, "gi");
 
-  const marked: string = mrkdwn(decode(post?.text || ""))
-    ? mrkdwn(decode(post?.text || "")).text
+  const marked: string = mrkdwn(decode(post?.text || post?.comments || ""))
+    ? mrkdwn(decode(post?.text || post?.comments || "")).text
     : "";
 
   // We use String.replace here so that we can know which capture group is

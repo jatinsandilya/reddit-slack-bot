@@ -56,7 +56,7 @@ export async function getPost(id: string) {
         let submissionWithComments = { ...submission, comments: [""] };
         if (commentList.length)
           submissionWithComments.comments = commentList.reduce(
-            (a: any, b: any) => a + b
+            (a: any, b: any) => a + "\n" + b + "\n"
           );
         return submissionWithComments;
       });

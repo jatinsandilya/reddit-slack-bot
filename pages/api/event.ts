@@ -11,8 +11,16 @@ export default async function handler(
     return handleUninstall(req, res);
   }
 
-  if (req.body.event.type === "link_shared") {
-    return handleUnfurl(req, res);
+  try {
+    if (req.body.event.type === "link_shared") {
+      return handleUnfurl(req, res);
+    }
+  } catch (error) {
+    console.error(
+      "Error responding to Slack share link event",
+      error,
+      req.body
+    );
   }
 
   return res.status(404).json({ message: "Unknown event type" });

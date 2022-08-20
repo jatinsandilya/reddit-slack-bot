@@ -54,9 +54,10 @@ export async function getPost(id: string) {
           getSubComments(c, commentList);
         });
         let submissionWithComments = { ...submission, comments: [""] };
-        submissionWithComments.comments = commentList.reduce(
-          (a: any, b: any) => a + b
-        );
+        if (commentList.length)
+          submissionWithComments.comments = commentList.reduce(
+            (a: any, b: any) => a + b
+          );
         return submissionWithComments;
       });
   };

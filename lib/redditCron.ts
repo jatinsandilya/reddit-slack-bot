@@ -15,10 +15,10 @@ export async function redditCron() {
     getLatestPost(),
   ]);
 
-  if (latestPostId === lastCheckedId) {
-    // if latest post id is the same as last checked id, do nothing
-    return { results: "No new posts" };
-  }
+  // if (latestPostId === lastCheckedId) {
+  //   // if latest post id is the same as last checked id, do nothing
+  //   return { results: "No new posts" };
+  // }
 
   const teamsAndKeywords = await getTeamsAndKeywords(); // get all team keys from redis
   const scanner = postScanner(teamsAndKeywords); // create a post scanner that contains all teams and their keywords in a constructed regex

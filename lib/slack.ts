@@ -67,14 +67,14 @@ export function verifyRequest(req: NextApiRequest) {
   }
 }
 
-export async function sendSlackMessage(postId: number, teamId: string) {
+export async function sendSlackMessage(postUrl: string, teamId: string) {
   /* Send a message containing the link to the hacker news post to Slack */
   const [accessToken, channelId] = await Promise.all([
     getAccessToken(teamId),
     getChannel(teamId),
   ]);
   console.log(
-    `Sending message to team ${teamId} in channel ${channelId} for post ${postId}`
+    `Sending message to team ${teamId} in channel ${channelId} for post ${postUrl}`
   );
   const response = await fetch("https://slack.com/api/chat.postMessage", {
     method: "POST",
@@ -83,7 +83,7 @@ export async function sendSlackMessage(postId: number, teamId: string) {
       Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify({
-      text: `https://news.ycombinator.com/item?id=${postId}`,
+      text: postUrl,
       channel: channelId,
       unfurl_links: true,
     }),

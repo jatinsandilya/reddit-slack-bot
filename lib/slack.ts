@@ -151,7 +151,7 @@ export async function handleUnfurl(req: NextApiRequest, res: NextApiResponse) {
               post.created
             }^{date_short_pretty} at {time}^${`${post.url}`}|Just Now>`,
             footer_icon:
-              "https://upload.wikimedia.org/wikipedia/en/5/58/Reddit_logo_new.svg",
+              "https://res.cloudinary.com/dfcnic8wq/image/upload/v1660996483/free-reddit-logo-icon-2436-thumb_czj19g.png",
           },
         },
       }),

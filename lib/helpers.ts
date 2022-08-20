@@ -7,6 +7,7 @@ import { TeamAndKeywords } from "@/lib/upstash";
 export function combineText(post: any) {
   /* combine text from post's title, text, and url */
   let text = "";
+  if (!post) return text;
   if (post.url) {
     text += `${post.url}\n`;
   }

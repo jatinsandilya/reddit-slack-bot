@@ -120,44 +120,49 @@ export async function handleUnfurl(req: NextApiRequest, res: NextApiResponse) {
 
   const { processedPost, mentionedTerms } = regexOperations(post, keywords); // get post data with keywords highlighted
 
-  const response = await fetch("https://slack.com/api/chat.unfurl", {
-    // unfurl the hacker news post using the Slack API
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify({
-      channel,
-      ts,
-      unfurls: {
-        [url]: {
-          mrkdwn_in: ["author_name", "text", "footer"],
-          fallback: post.url,
-          author_name: `New <${post.url}|post> from <https://www.reddit.com/user/${post.author_name}|${post.author_name}>`,
-          author_icon: post.author_icon,
-          text: processedPost,
-          ...(mentionedTerms.size > 0 && {
-            fields: [
-              {
-                title: "Mentioned Terms",
-                value: Array.from(mentionedTerms).join(", "),
-                short: false,
-              },
-            ],
-          }),
-          footer_icon:
-            "https://upload.wikimedia.org/wikipedia/en/5/58/Reddit_logo_new.svg",
-        },
+  if (post) {
+    const response = await fetch("https://slack.com/api/chat.unfurl", {
+      // unfurl the hacker news post using the Slack API
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
       },
-    }),
-  });
-  const trackResponse = await trackUnfurls(team_id); // track unfurl usage for a team
+      body: JSON.stringify({
+        channel,
+        ts,
+        unfurls: {
+          [url]: {
+            mrkdwn_in: ["author_name", "text", "footer"],
+            fallback: post.url,
+            author_name: `New <${post.url}|post> from <https://www.reddit.com/user/${post.author_fullname}|${post.author_fullname}>`,
+            text: processedPost,
+            ...(mentionedTerms.size > 0 && {
+              fields: [
+                {
+                  title: "Mentioned Terms",
+                  value: Array.from(mentionedTerms).join(", "),
+                  short: false,
+                },
+              ],
+            }),
+            footer_icon:
+              "https://upload.wikimedia.org/wikipedia/en/5/58/Reddit_logo_new.svg",
+          },
+        },
+      }),
+    });
+    const trackResponse = await trackUnfurls(team_id); // track unfurl usage for a team
 
-  return res.status(200).json({
-    response,
-    trackResponse,
-  });
+    return res.status(200).json({
+      response,
+      trackResponse,
+    });
+  } else {
+    return res.status(200).json({
+      message: "Could not find post",
+    });
+  }
 }
 
 export function verifyRequestWithToken(req: NextApiRequest) {

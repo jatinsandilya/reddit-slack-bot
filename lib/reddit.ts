@@ -21,29 +21,31 @@ export async function getLatestPosts() {
   const subReddit: string = "Zapier"; // TODO: Update with something else. Make it dynamic
   return await client.getNew(subReddit, { limit: 10 });
 }
-
+//@ts-ignore
 export async function getPost(id: string) {
   /* get post data using its id from hacker news */
-  const run = async () => {
+  const run = () => {
     console.log("fetching post", id);
     //@ts-ignore
-    const submission = await client.getSubmission(id);
-    if (submission === null) {
-      throw new Error("Submission not found!");
-    }
-    const commentBodies = await submission.comments.map(
-      (c: { body: any }) => c.body
-    );
-    let submissionWithComments = { ...submission, comments: [""] };
-    submissionWithComments.comments = commentBodies;
-    return submissionWithComments;
+    return client
+      .getSubmission(id)
+      .fetch()
+      .then((submission) => {
+        if (submission === null) {
+          throw new Error("Submission not found!");
+        }
+        const commentBodies = submission.comments.map(
+          (c: { body: any }) => c.body
+        );
+        let submissionWithComments = { ...submission, comments: [""] };
+        submissionWithComments.comments = commentBodies;
+        return submissionWithComments;
+      });
   };
   try {
-    return await pRetry(run, {
-      retries: 5,
-      minTimeout: 50,
-    });
+    return run();
   } catch (e) {
+    console.log("error", e);
     return null;
   }
 }

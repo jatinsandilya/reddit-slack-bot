@@ -31,8 +31,9 @@ export async function redditCron() {
   const latestPosts = await getLatestPosts();
   for (let i = 0; i <= latestPosts.length; i++) {
     const post = latestPosts[i]; // get post from hacker news
-    if (await checkIfPostWasChecked(post.id)) continue; // avoid double checking posts
-    console.log("checking for keywords in post", i);
+    if (post === undefined) continue;
+    // if (await checkIfPostWasChecked(post.id)) continue; // avoid double checking posts
+    console.log("checking for keywords in post", post.id);
     const interestedTeams = Array.from(scanner(post)); // get teams that are interested in this post
     if (interestedTeams.length > 0) {
       results[i] = interestedTeams; // add post id and interested teams to results

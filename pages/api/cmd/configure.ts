@@ -16,7 +16,7 @@ export default async function handler(
 
   const { team_id, command } = req.body;
 
-  if (command === "/configure") {
+  if (command === "/configure" || command === "/configure-reddit") {
     const { keywords, channel, unfurls, notifications } =
       await getTeamConfigAndStats(team_id);
 

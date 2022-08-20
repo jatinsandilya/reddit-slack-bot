@@ -40,7 +40,7 @@ export async function redditCron() {
         interestedTeams.map(async (teamId) => {
           console.log("sending post to team", teamId);
           try {
-            await sendSlackMessage(i, teamId); // send post to team
+            await sendSlackMessage(post.url, teamId); // send post to team
           } catch (e) {
             console.log(
               `Error sending post ${i} to team ${teamId}. Cause of error: ${e}`

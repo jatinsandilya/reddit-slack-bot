@@ -135,7 +135,7 @@ export async function handleUnfurl(req: NextApiRequest, res: NextApiResponse) {
           [url]: {
             mrkdwn_in: ["author_name", "text", "footer"],
             fallback: post.url,
-            author_name: `New <${post.url}|post> from <https://www.reddit.com/user/${post.author_fullname}|${post.author_fullname}>`,
+            author_name: `New <${post.url}|post> from <https://www.reddit.com/user/${post.author.name}|${post.author.name}>`,
             text: processedPost,
             ...(mentionedTerms.size > 0 && {
               fields: [
@@ -146,7 +146,9 @@ export async function handleUnfurl(req: NextApiRequest, res: NextApiResponse) {
                 },
               ],
             }),
-            footer: ` Reddit | <!date^${post.created_utc}^{date_short_pretty} at {time}>`,
+            footer: ` Reddit |  <!date^${
+              post.created
+            }^{date_short_pretty} at {time}^${`https://news.ycombinator.com/item?id=${post.id}`}|Just Now>`,
             footer_icon:
               "https://upload.wikimedia.org/wikipedia/en/5/58/Reddit_logo_new.svg",
           },

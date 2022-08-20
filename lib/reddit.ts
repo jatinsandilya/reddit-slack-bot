@@ -19,7 +19,7 @@ export async function getLatestPost() {
 export async function getLatestPosts() {
   /* get latest post id from Reddit*/
   const subReddit: string = "Zapier"; // TODO: Update with something else. Make it dynamic
-  return await client.getNew(subReddit, { limit: 10 });
+  return await client.getNew(subReddit, { limit: 20 });
 }
 
 function getSubComments(comment: Snoowrap.Comment, allComments: any) {

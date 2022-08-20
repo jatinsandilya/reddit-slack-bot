@@ -26,7 +26,8 @@ async function handler(_req: NextApiRequest, res: NextApiResponse) {
  * To test out the endpoint manually (wihtout using QStash), you can do `export default handler` instead and
  * hit this endpoint via http://localhost:3000/api/cron
  */
-export default verifySignature(handler);
+// export default verifySignature(handler);
+export default handler;
 
 export const config = {
   api: {

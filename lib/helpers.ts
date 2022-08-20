@@ -19,7 +19,7 @@ export function combineText(post: any) {
     text += `${post.text}\n`;
   }
   if (post.selftext) {
-    text += `${post.text}\n`;
+    text += `${post.selftext}\n`;
   }
   if (post.comments) {
     text += `${post.comments}\n`;

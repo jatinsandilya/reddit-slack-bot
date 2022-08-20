@@ -148,7 +148,7 @@ export async function handleUnfurl(req: NextApiRequest, res: NextApiResponse) {
             }),
             footer: ` Reddit |  <!date^${
               post.created
-            }^{date_short_pretty} at {time}^${`https://news.ycombinator.com/item?id=${post.id}`}|Just Now>`,
+            }^{date_short_pretty} at {time}^${`${post.url}`}|Just Now>`,
             footer_icon:
               "https://upload.wikimedia.org/wikipedia/en/5/58/Reddit_logo_new.svg",
           },

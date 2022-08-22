@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { redditCron } from "@/lib/redditCron";
+import { cron } from "@/lib/cron";
 import { verifySignature } from "@upstash/qstash/nextjs";
 import { log } from "@/lib/slack";
 import { isDuplicateCron } from "@/lib/upstash";
-import { getAllSubreddits } from "@/lib/upstashReddit";
+import { getAllSubreddits } from "@/lib/upstash";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (await isDuplicateCron()) {
@@ -15,7 +15,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     let responses: any = [];
     for (let i = 0; i < subReddits.length; i++) {
       const subReddit = subReddits[i];
-      responses.push(await redditCron(subReddit));
+      responses.push(await cron(subReddit));
     }
     console.log("Reddit job successful! Response:", responses);
     res.status(200).json(responses);

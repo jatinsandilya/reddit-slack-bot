@@ -1,7 +1,4 @@
-import pRetry from "p-retry";
-import { SubmissionStream } from "snoostorm";
 import Snoowrap from "snoowrap";
-import { getTrackedSubreddit } from "./upstashReddit";
 
 const client = new Snoowrap({
   userAgent: "jatin-localhost",

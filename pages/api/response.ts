@@ -7,7 +7,7 @@ import {
 } from "@/lib/upstash";
 import { verifyRequest, log, respondToSlack } from "@/lib/slack";
 import { commonWords } from "manifest";
-import { setTrackedSubreddit } from "@/lib/upstashReddit";
+import { setTrackedSubreddit } from "@/lib/upstash";
 
 export default async function handler(
   req: NextApiRequest,

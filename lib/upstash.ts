@@ -1,5 +1,5 @@
 import { Redis } from "@upstash/redis";
-import { getLatestPost } from "./hn";
+import { getLatestPost } from "./reddit";
 
 export const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL || "",
@@ -96,30 +96,32 @@ export async function setChannel(teamId: string, channel: string) {
   return await redis.set(`${teamId}_channel`, channel);
 }
 
-export async function getLastCheckedId(): Promise<number> {
+export async function getLastCheckedId(subReddit: string): Promise<string> {
   /* Get the last checked post ID from redis */
-  const lastCheckedId = (await redis.get("lastCheckedId")) as number;
+  const lastCheckedId = (await redis.get("lastCheckedId")) as string;
   if (!lastCheckedId) {
     // if lastCheckedId is not set (first time running), return the latest post ID on HN instead
-    const latestPostId = await getLatestPost();
+    const latestPostId = await getLatestPost(subReddit);
     return latestPostId;
   }
   return lastCheckedId;
 }
 
-export async function setLastCheckedId(id: number) {
+export async function setLastCheckedId(id: string) {
   /* Set the last checked post ID in redis */
   return await redis.set("lastCheckedId", id);
 }
 
-export async function checkIfPostWasChecked(id: number) {
+export async function checkIfPostWasChecked(id: string) {
   /* Check if a post has been checked in redis – 
      if setting the key for the post returns null, it means it's already been set
-     Here, we're setting the keys to expire in 24 hours 
+     Here, we're setting the keys to expire in 72 hours 
   */
   return (
-    (await redis.set(`post_${id}`, true, { nx: true, ex: 24 * 60 * 60 })) ===
-    null
+    (await redis.set(`post_${id}`, true, {
+      nx: true,
+      ex: 24 * 60 * 60 * 3,
+    })) === null
   );
 }
 
@@ -130,6 +132,20 @@ export interface TeamAndKeywords {
 export async function getTeamsAndKeywords(): Promise<TeamAndKeywords> {
   /* Get all teams and their respective keywords */
   return (await redis.hgetall("keywords")) || {};
+}
+
+export async function getTrackedSubreddit(
+  teamId: string
+): Promise<string | null> {
+  /* Get a team's tracked subreddit. */
+  return await redis.get(`${teamId}_subreddit`);
+}
+export async function setTrackedSubreddit(
+  teamId: string,
+  subReddit: string
+): Promise<string | null> {
+  /* Set a team's tracked subreddit. */
+  return await redis.set(`${teamId}_subreddit`, subReddit);
 }
 
 export async function clearDataForTeam(teamId: string) {
@@ -189,4 +205,17 @@ export async function getTeamConfigAndStats(
     notifications: json[1][2] || 0,
     subReddit: json[1][3],
   };
+}
+
+export async function getAllSubreddits() {
+  const keys = await redis.keys("*_subreddit");
+  const result: string[] = [];
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    const value: string | null = await redis.get(key);
+    if (!!value) {
+      result.push(value);
+    }
+  }
+  return result;
 }

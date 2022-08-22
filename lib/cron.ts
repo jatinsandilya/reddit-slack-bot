@@ -5,11 +5,11 @@ import {
   checkIfPostWasChecked,
   getTeamsAndKeywords,
   getTrackedSubreddit,
-} from "./upstashReddit";
+} from "./upstash";
 import { postScanner } from "./helpers";
 import { sendSlackMessage } from "./slack";
 
-export async function redditCron(subReddit: string) {
+export async function cron(subReddit: string) {
   // last checked post id from redis, latest post id from hacker news
   const [lastCheckedId, latestPostId] = await Promise.all([
     getLastCheckedId(subReddit),

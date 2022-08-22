@@ -10,7 +10,6 @@ import {
   trackUnfurls,
   getTeamConfigAndStats,
 } from "./upstash";
-import { getParent } from "@/lib/hn";
 import { getPost } from "@/lib/reddit";
 
 export function verifyRequest(req: NextApiRequest) {

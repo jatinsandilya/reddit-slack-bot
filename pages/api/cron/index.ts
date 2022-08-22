@@ -4,13 +4,13 @@ import { verifySignature } from "@upstash/qstash/nextjs";
 import { log } from "@/lib/slack";
 import { isDuplicateCron } from "@/lib/upstash";
 
-async function handler(_req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (await isDuplicateCron()) {
     // check if this is a duplicate cron job (threshold of 5s)
     return res.status(500).json({ message: "Duplicate cron job" });
   }
   try {
-    const response = await redditCron();
+    const response = await redditCron(req.body.subReddit);
     console.log("Reddit job successful! Response:", response);
     res.status(200).json(response);
   } catch (err) {
@@ -28,9 +28,3 @@ async function handler(_req: NextApiRequest, res: NextApiResponse) {
  */
 // export default verifySignature(handler);
 export default handler;
-
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};

@@ -8,11 +8,11 @@ import {
 import { postScanner } from "./helpers";
 import { sendSlackMessage } from "./slack";
 
-export async function redditCron() {
+export async function redditCron(subReddit: string) {
   // last checked post id from redis, latest post id from hacker news
   const [lastCheckedId, latestPostId] = await Promise.all([
-    getLastCheckedId(),
-    getLatestPost(),
+    getLastCheckedId(subReddit),
+    getLatestPost(subReddit),
   ]);
 
   // if (latestPostId === lastCheckedId) {
@@ -28,7 +28,7 @@ export async function redditCron() {
   } = {};
   let errors: any[] = [];
 
-  const latestPosts = await getLatestPosts();
+  const latestPosts = await getLatestPosts(subReddit);
   for (let i = 0; i <= latestPosts.length; i++) {
     const post = latestPosts[i]; // get post from hacker news
     if (post === undefined) continue;

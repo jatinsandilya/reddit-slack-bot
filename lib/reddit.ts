@@ -1,6 +1,7 @@
 import pRetry from "p-retry";
 import { SubmissionStream } from "snoostorm";
 import Snoowrap from "snoowrap";
+import { getTrackedSubreddit } from "./upstashReddit";
 
 const client = new Snoowrap({
   userAgent: "jatin-localhost",
@@ -10,15 +11,13 @@ const client = new Snoowrap({
   refreshToken: "247055007568-0Kw3Llx21ojpFqlSXR3mU_JO9uuqPQ",
 });
 
-export async function getLatestPost() {
+export async function getLatestPost(subReddit?: string) {
   /* get latest post id from Reddit*/
-  const subReddit: string = "Zapier"; // TODO: Update with something else. Make it dynamic
   return (await client.getNew(subReddit, { limit: 1 }))[0].id;
 }
 
-export async function getLatestPosts() {
+export async function getLatestPosts(subReddit?: string) {
   /* get latest post id from Reddit*/
-  const subReddit: string = "Zapier"; // TODO: Update with something else. Make it dynamic
   return await client.getNew(subReddit, { limit: 20 });
 }
 

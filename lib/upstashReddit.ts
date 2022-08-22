@@ -96,12 +96,12 @@ export async function setChannel(teamId: string, channel: string) {
   return await redis.set(`${teamId}_channel`, channel);
 }
 
-export async function getLastCheckedId(): Promise<string> {
+export async function getLastCheckedId(subReddit: string): Promise<string> {
   /* Get the last checked post ID from redis */
   const lastCheckedId = (await redis.get("lastCheckedId")) as string;
   if (!lastCheckedId) {
     // if lastCheckedId is not set (first time running), return the latest post ID on HN instead
-    const latestPostId = await getLatestPost();
+    const latestPostId = await getLatestPost(subReddit);
     return latestPostId;
   }
   return lastCheckedId;
@@ -130,6 +130,20 @@ export interface TeamAndKeywords {
 export async function getTeamsAndKeywords(): Promise<TeamAndKeywords> {
   /* Get all teams and their respective keywords */
   return (await redis.hgetall("keywords")) || {};
+}
+
+export async function getTrackedSubreddit(
+  teamId: string
+): Promise<string | null> {
+  /* Get a team's tracked subreddit. */
+  return await redis.get(`${teamId}_subreddit`);
+}
+export async function setTrackedSubreddit(
+  teamId: string,
+  subReddit: string
+): Promise<string | null> {
+  /* Set a team's tracked subreddit. */
+  return await redis.set(`${teamId}_subreddit`, subReddit);
 }
 
 export async function clearDataForTeam(teamId: string) {

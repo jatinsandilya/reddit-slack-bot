@@ -40,7 +40,15 @@ export async function redditCron(subReddit: string) {
       results[i] = interestedTeams; // add post id and interested teams to results
       await Promise.all(
         interestedTeams.map(async (teamId) => {
-          if (post.subreddit_id !== (await getTrackedSubreddit(teamId))) {
+          const subRedditForTeam = (
+            await getTrackedSubreddit(teamId)
+          )?.toLowerCase();
+          if (post.subreddit.display_name != subRedditForTeam) {
+            console.log(
+              "Skipping since this team is not subbed to this subReddit",
+              teamId,
+              post.subreddit.display_name
+            );
             return;
           }
           console.log("sending post to team", teamId);

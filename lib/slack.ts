@@ -260,36 +260,36 @@ export const configureBlocks = (
       text: ":bulb: SUBREDDIT :bulb:",
     },
   },
-  {
-    type: "section",
-    block_id: `keyword_${subReddit}`,
-    text: {
-      type: "mrkdwn",
-      text: "`" + subReddit + "`",
-    },
-  },
-  {
-    type: "input",
-    dispatch_action: true,
-    element: {
-      type: "plain_text_input",
-      action_id: "set_subreddit",
-      placeholder: {
-        type: "plain_text",
-        text: "Add a valid subreddit name",
-      },
-      dispatch_action_config: {
-        trigger_actions_on: ["on_enter_pressed"],
-      },
-      min_length: 3,
-      max_length: 30,
-      focus_on_load: true,
-    },
-    label: {
-      type: "plain_text",
-      text: " ",
-    },
-  },
+  // {
+  //   type: "section",
+  //   block_id: `keyword_${subReddit}`,
+  //   text: {
+  //     type: "mrkdwn",
+  //     text: "`" + subReddit + "`",
+  //   },
+  // },
+  // {
+  //   type: "input",
+  //   dispatch_action: true,
+  //   element: {
+  //     type: "plain_text_input",
+  //     action_id: "set_subreddit",
+  //     placeholder: {
+  //       type: "plain_text",
+  //       text: "Add a valid subreddit name",
+  //     },
+  //     dispatch_action_config: {
+  //       trigger_actions_on: ["on_enter_pressed"],
+  //     },
+  //     min_length: 3,
+  //     max_length: 30,
+  //     focus_on_load: true,
+  //   },
+  //   label: {
+  //     type: "plain_text",
+  //     text: " ",
+  //   },
+  // },
   {
     type: "divider",
   },

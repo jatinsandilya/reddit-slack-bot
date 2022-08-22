@@ -260,23 +260,14 @@ export const configureBlocks = (
       text: ":bulb: SUBREDDIT :bulb:",
     },
   },
-  subReddit
-    ? {
-        type: "section",
-        block_id: `keyword_${subReddit}`,
-        text: {
-          type: "mrkdwn",
-          text: "`" + subReddit + "`",
-        },
-      }
-    : {
-        type: "section",
-        block_id: `keyword_${subReddit}`,
-        text: {
-          type: "mrkdwn",
-          text: "None",
-        },
-      },
+  {
+    type: "section",
+    block_id: `keyword_${subReddit}`,
+    text: {
+      type: "mrkdwn",
+      text: "`" + subReddit + "`",
+    },
+  },
   {
     type: "input",
     dispatch_action: true,

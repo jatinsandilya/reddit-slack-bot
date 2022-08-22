@@ -30,7 +30,7 @@ export default async function handler(
         channel,
         unfurls,
         notifications,
-        subReddit
+        subReddit || "None"
       ),
     });
   } else {

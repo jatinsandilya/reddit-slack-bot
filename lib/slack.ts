@@ -227,6 +227,7 @@ export const configureBlocks = (
   channel: string,
   unfurls: number,
   notifications: number,
+  subReddit: string,
   feedback?: {
     keyword?: string;
     channel?: string;
@@ -248,6 +249,48 @@ export const configureBlocks = (
         text: `Current Usage: ${unfurls} link previews shown, ${notifications} notifications sent |  <https://slack.com/apps/A03QV0U65HN|More Configuration Settings>`,
       },
     ],
+  },
+  {
+    type: "divider",
+  },
+  {
+    type: "section",
+    text: {
+      type: "mrkdwn",
+      text: ":bulb: SUBREDDIT :bulb:",
+    },
+  },
+  subReddit
+    ? {
+        type: "section",
+        block_id: `keyword_${subReddit}`,
+        text: {
+          type: "mrkdwn",
+          text: "`" + subReddit + "`",
+        },
+      }
+    : null,
+  {
+    type: "input",
+    dispatch_action: true,
+    element: {
+      type: "plain_text_input",
+      action_id: "set_subreddit",
+      placeholder: {
+        type: "plain_text",
+        text: "Add a valid subreddit name",
+      },
+      dispatch_action_config: {
+        trigger_actions_on: ["on_enter_pressed"],
+      },
+      min_length: 3,
+      max_length: 30,
+      focus_on_load: true,
+    },
+    label: {
+      type: "plain_text",
+      text: " ",
+    },
   },
   {
     type: "divider",
@@ -386,7 +429,7 @@ export async function respondToSlack(
     channel?: string;
   }
 ) {
-  const { keywords, channel, unfurls, notifications } =
+  const { keywords, channel, unfurls, notifications, subReddit } =
     await getTeamConfigAndStats(teamId); // get the latest state of the bot configurations to make sure it's up to date
 
   // respond to Slack with the new state of the bot
@@ -401,6 +444,7 @@ export async function respondToSlack(
         channel,
         unfurls,
         notifications,
+        subReddit,
         feedback
       ),
     }),

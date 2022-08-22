@@ -7,6 +7,7 @@ import {
 } from "@/lib/upstash";
 import { verifyRequest, log, respondToSlack } from "@/lib/slack";
 import { commonWords } from "manifest";
+import { setTrackedSubreddit } from "@/lib/upstashReddit";
 
 export default async function handler(
   req: NextApiRequest,
@@ -141,6 +142,18 @@ export default async function handler(
     } else {
       return respondToSlack(res, response_url, team.id, {
         channel: `:warning: Failed to set channel. Cause: ${response}`,
+      });
+    }
+  } else if (action_id === "set_subreddit") {
+    const subRedditId = data.value;
+    const response = await setTrackedSubreddit(team.id, subRedditId);
+    if (response === "OK") {
+      return respondToSlack(res, response_url, team.id, {
+        channel: `:white_check_mark: Successfully set subReddit to track to <#${subRedditId}>`,
+      });
+    } else {
+      return respondToSlack(res, response_url, team.id, {
+        channel: `:warning: Failed to set subRedditId. Cause: ${response}`,
       });
     }
   }

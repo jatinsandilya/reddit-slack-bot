@@ -4,6 +4,7 @@ import {
   setLastCheckedId,
   checkIfPostWasChecked,
   getTeamsAndKeywords,
+  getTrackedSubreddit,
 } from "./upstashReddit";
 import { postScanner } from "./helpers";
 import { sendSlackMessage } from "./slack";
@@ -32,13 +33,16 @@ export async function redditCron(subReddit: string) {
   for (let i = 0; i <= latestPosts.length; i++) {
     const post = latestPosts[i]; // get post from hacker news
     if (post === undefined) continue;
-    if (await checkIfPostWasChecked(post.id)) continue; // avoid double checking posts
+    // if (await checkIfPostWasChecked(post.id)) continue; // avoid double checking posts
     console.log("checking for keywords in post", post.id);
     const interestedTeams = Array.from(scanner(post)); // get teams that are interested in this post
     if (interestedTeams.length > 0) {
       results[i] = interestedTeams; // add post id and interested teams to results
       await Promise.all(
         interestedTeams.map(async (teamId) => {
+          if (post.subreddit_id !== (await getTrackedSubreddit(teamId))) {
+            return;
+          }
           console.log("sending post to team", teamId);
           try {
             await sendSlackMessage(post.url + `?id=${post.id}`, teamId); // send post to team

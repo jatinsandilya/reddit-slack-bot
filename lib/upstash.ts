@@ -163,6 +163,7 @@ export interface TeamConfigAndStats {
   channel: string;
   unfurls: number;
   notifications: number;
+  subReddit: string;
 }
 
 export async function getTeamConfigAndStats(
@@ -174,14 +175,18 @@ export async function getTeamConfigAndStats(
   pipeline.mget(
     `${teamId}_channel`,
     `${teamId}_unfurls`,
-    `${teamId}_notifications`
+    `${teamId}_notifications`,
+    `${teamId}_subreddit`
   );
-  const json = await pipeline.exec<[string[], [string, number, number]]>();
+  const json = await pipeline.exec<
+    [string[], [string, number, number, string]]
+  >();
   return {
     teamId,
     keywords: json[0] || [],
     channel: json[1][0],
     unfurls: json[1][1] || 0,
     notifications: json[1][2] || 0,
+    subReddit: json[1][3],
   };
 }

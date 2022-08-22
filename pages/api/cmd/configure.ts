@@ -17,7 +17,7 @@ export default async function handler(
   const { team_id, command } = req.body;
 
   if (command === "/configure" || command === "/configure-reddit") {
-    const { keywords, channel, unfurls, notifications } =
+    const { keywords, channel, unfurls, notifications, subReddit } =
       await getTeamConfigAndStats(team_id);
 
     return res.status(200).json({
@@ -25,7 +25,13 @@ export default async function handler(
       text: "Configure your bot",
       unfurl_links: false, // do not unfurl links & media for bot configuration message
       unfurl_media: false,
-      blocks: configureBlocks(keywords, channel, unfurls, notifications),
+      blocks: configureBlocks(
+        keywords,
+        channel,
+        unfurls,
+        notifications,
+        subReddit
+      ),
     });
   } else {
     return res.status(200).json({

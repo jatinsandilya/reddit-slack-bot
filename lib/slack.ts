@@ -269,7 +269,14 @@ export const configureBlocks = (
           text: "`" + subReddit + "`",
         },
       }
-    : null,
+    : {
+        type: "section",
+        block_id: `keyword_${subReddit}`,
+        text: {
+          type: "mrkdwn",
+          text: "None",
+        },
+      },
   {
     type: "input",
     dispatch_action: true,

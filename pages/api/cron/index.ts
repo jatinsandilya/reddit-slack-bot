@@ -3,6 +3,7 @@ import { redditCron } from "@/lib/redditCron";
 import { verifySignature } from "@upstash/qstash/nextjs";
 import { log } from "@/lib/slack";
 import { isDuplicateCron } from "@/lib/upstash";
+import { getAllSubreddits } from "@/lib/upstashReddit";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (await isDuplicateCron()) {
@@ -10,9 +11,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(500).json({ message: "Duplicate cron job" });
   }
   try {
-    const response = await redditCron(req.body.subReddit);
-    console.log("Reddit job successful! Response:", response);
-    res.status(200).json(response);
+    let subReddits = await getAllSubreddits();
+    let responses: any = [];
+    for (let i = 0; i < subReddits.length; i++) {
+      const subReddit = subReddits[i];
+      responses.push(await redditCron(subReddit));
+    }
+    console.log("Reddit job successful! Response:", responses);
+    res.status(200).json(responses);
   } catch (err) {
     console.log("Cron job error:", err);
     await log("Cron job error: \n" + "```" + JSON.stringify(err) + "```");

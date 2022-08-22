@@ -199,3 +199,16 @@ export async function getTeamConfigAndStats(
     notifications: json[1][2] || 0,
   };
 }
+
+export async function getAllSubreddits() {
+  const keys = await redis.keys("*_subreddit");
+  const result: string[] = [];
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    const value: string | null = await redis.get(key);
+    if (!!value) {
+      result.push(value);
+    }
+  }
+  return result;
+}

@@ -287,19 +287,6 @@ export const configureBlocks = (
       text: " ",
     },
   },
-  ...(feedback?.subReddit
-    ? [
-        {
-          type: "context",
-          elements: [
-            {
-              type: "mrkdwn",
-              text: feedback.subReddit,
-            },
-          ],
-        },
-      ]
-    : []),
   {
     type: "divider",
   },

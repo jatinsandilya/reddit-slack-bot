@@ -149,6 +149,7 @@ export default async function handler(
     const response = await setTrackedSubreddit(team.id, subRedditId);
     if (response === "OK") {
       return respondToSlack(res, response_url, team.id, {
+        subReddit: subRedditId,
         channel: `:white_check_mark: Successfully set subReddit to track to <#${subRedditId}>`,
       });
     } else {
